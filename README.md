@@ -1,6 +1,6 @@
 # Deploy Azure Resources using Terraform
 
-This repository is a template used to deploy resource within your Azure Subscription
+This repository is a template used to deploy several resources within your Azure Subscription
 
 ## 🚀 First Steps
 
