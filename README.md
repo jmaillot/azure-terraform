@@ -1,126 +1,128 @@
-## How to connect to Azure CLI and use the correct subscription
+# Deploy Azure Resources using Terraform
 
-1. Open a command line that has access to the Azure CLI.
+This repository is a template used to deploy resource within your Azure Subscription
 
+## 🚀 First Steps
 
+The very first step will be to download this repository files onto a local folder, or just **clone the repository** and `cd` into it.
 
-2. Run az login without any parameters and follow the instructions to sign in to Azure.
+📍 _**All commands** are run on your **local** workstation within your repository directory_
 
-```ps
-az login
-```
+## 🔧 Workstation Tools
 
-You will get a result like this :
+Lets get the required workstation tools installed and configured.
 
-A web browser has been opened at https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize. Please continue the login in the web browser. If no web browser is available or if the web browser fails to open, use device code flow with `az login --use-device-code`.
-[
-  {
-    "cloudName": "AzureCloud",
-    "homeTenantId": "********-****-****-****-************",
-    "id": "********-****-****-****-************",
-    "isDefault": true,
-    "managedByTenants": [],
-    "name": "Subscription-Name",
-    "state": "Enabled",
-    "tenantId": "********-****-****-****-************",
-    "user": {
-      "name": "admin@domainname.fr",
-      "type": "user"
+1. Install the latest version of the Terraform CLI ([Terraform](https://developer.hashicorp.com/terraform/downloads)) and add an environment variable pointing to the terraform.exe PATH.
+
+    📍 _See the task [installation docs](https://stackoverflow.com/questions/1618280/where-can-i-set-path-to-make-exe-on-windows) to add a variable to the PATH
+
+2. Install the latest version of the Azure CLI ([Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli)) and install it.
+
+    📍 _See the task [installation docs](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli)
+
+## 📄 Create a Service Principal to use with you terraform deployments
+
+1. Open a PowerShell
+2. Login to your Azure Account 
+
+  2a. Run az login without any parameters and follow the instructions to sign in to Azure.
+
+    ```ps
+    az login
+    ```
+
+    You will get a result like this :
+
+    ```text
+    A web browser has been opened at https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize. Please continue the login in the web browser. If no web browser is available or if the web browser fails to open, use device code flow with `az login --use-device-code`.
+    [
+      {
+        "cloudName": "AzureCloud",
+        "homeTenantId": "********-****-****-****-************",
+        "id": "********-****-****-****-************",
+        "isDefault": true,
+        "managedByTenants": [],
+        "name": "Subscription-Name",
+        "state": "Enabled",
+        "tenantId": "********-****-****-****-************",
+        "user": {
+          "name": "admin@domainname.fr",
+          "type": "user"
+        }
+      }
+    ]
+    ```
+  2b. Confirm the current Azure subscription, run az account show :
+
+    ```ps
+    az account show
+    ```
+
+  2c. To view all the Azure subscription names and IDs for your account :
+
+    📍 _Replace the <microsoft_account_email> with your email address
+
+    ```ps
+    az account list --query "[?user.name=='<microsoft_account_email>'].{Name:name, ID:id, Default:isDefault}" --output Table
+    ```
+
+  2d. If you have multiple subscriptions, specify the Azure subscription you want to run Terraform against using az account set:
+
+    ```ps
+    az account set --subscription "<subscription_id_or_subscription_name>"
+    ```
+
+  2e. Finally, create the Service Principal
+
+    📍 _Replace <id_of_the_subscription> with the id result from the "az account show" command 
+
+    ```ps
+    servicePrincipalName="msdocs-sp-$randomIdentifier"
+    roleName="azureRoleName"
+    az ad sp create-for-rbac --name $servicePrincipalName --role $roleName --scopes="/subscriptions/<id_of_the_subscription>"
+    ```
+
+    ```text
+
+    This command will output 5 values:
+
+    {
+      "appId": "00000000-0000-0000-0000-000000000000",
+      "displayName": "azure-cli-2017-06-05-10-41-15",
+      "name": "http://azure-cli-2017-06-05-10-41-15",
+      "password": "0000-0000-0000-0000-000000000000",
+      "tenant": "00000000-0000-0000-0000-000000000000"
     }
-  }
-]
 
-3. To confirm the current Azure subscription, run az account show.
+    These values map to the Terraform variables like so:
 
-```ps
-az account show
-```
+    * appId is the client_id defined above.
+    * password is the client_secret defined above.
+    * tenant is the tenant_id defined above.
 
-4. To view all the Azure subscription names and IDs for a specific Microsoft account, run az account list (Just replace the email part)
+    ```
 
-```ps
-az account list --query "[?user.name=='<microsoft_account_email>'].{Name:name, ID:id, Default:isDefault}" --output Table
-```
+## 📝 Pre-requisites checklist
 
-5. To use a specific Azure subscription, run az account set.
+Before we get started, make sure you have those requirements.
 
-```ps
-az account set --subscription "<subscription_id_or_subscription_name>"
-```
+- [ ] You have an Azure Contributor Account
+- [ ] You have the Service Principal AppId
+- [ ] You have the Service Principal Password
+- [ ] You have the Tenant id
 
-## Creation of the Service Principal to use with Terraform
+[!IMPORTANT]  
+Those are required information for your deployment to succeed.
 
-1. Creation of the Service Principal (Replace "id_of_the_subscription" with the id result from the "az account show" command)
+## :rocket: Basic Terraform commands you will need in the modules
 
-```ps
-servicePrincipalName="msdocs-sp-$randomIdentifier"
-roleName="azureRoleName"
-az ad sp create-for-rbac --name $servicePrincipalName --role $roleName --scopes="/subscriptions/<id_of_the_subscription>"
-```
-
-
-This command will output 5 values:
-
-{
-  "appId": "00000000-0000-0000-0000-000000000000",
-  "displayName": "azure-cli-2017-06-05-10-41-15",
-  "name": "http://azure-cli-2017-06-05-10-41-15",
-  "password": "0000-0000-0000-0000-000000000000",
-  "tenant": "00000000-0000-0000-0000-000000000000"
-}
-
-These values map to the Terraform variables like so:
-
-* appId is the client_id defined above.
-* password is the client_secret defined above.
-* tenant is the tenant_id defined above.
-
-2. Rename the "providers.tf.example file in the root of this project directory to "providers.tf" and fill out the required information
-
-3. Rename the "terraform.tfvars.example file in the root of this project directory to "terraform.tfvars" and change variables values to fit your environment
-
-4. Configure your VPN Root Certificate
-
-Creation of the Root Certificate (You can change the CN Value to fit your needs)
-
-```ps
-$cert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
--Subject "CN=VPNROOTCA" -KeyExportPolicy Exportable `
--HashAlgorithm sha256 -KeyLength 2048 `
--CertStoreLocation "Cert:\CurrentUser\My" -KeyUsageProperty Sign -KeyUsage CertSign -NotAfter (Get-Date).AddYears(20)
-```
-
-Export the cert using certmgr.msc to a *.cer file (without private key), and edit it in notepad
-Take the values between "-----BEGIN CERTIFICATE-----" and "-----END CERTIFICATE-----" and replace them in virtual-network-gateway module, in "main.tf" file.
-
-Exemple of the certificate file content :
-
------BEGIN CERTIFICATE-----
-MIIC4zCCAcugAwIBAgIQNxE55rUVb71NB/tUS57hszANBgkqhkiG9w0BAQsFADAU
-MRIwEAYDVQQDDAlWUE5ST09UQ0EwHhcNMjMwODEwMDc1NDE1WhcNNDMwODEwMDgw
-NDE0WjAUMRIwEAYDVQQDDAlWUE5ST09UQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IB
-DwAwggEKAoIBAQDAQ3GMTN6Qw7mkG5nB+J8IS7zRzTny3EO4d6y9qboY72ModkdZ
-RwnJejxZhKkExhItYriOO2OOXrodYnX9P2DWtG5CNCUdgduWC5nDXEwgXx9QeaH8
-b+rk8VxXf/iIE5ASGYKDQb/qieU2apTRo6jjq/1l3Gh4NJWvnmLCgMU3wrpxNz9m
-0yLZCXuQ10QylBE/Vx+7e4RZMJ/a7Aam6RIa5MbSoXu85xzeZBj42PKRKtQi1MB6
-jv919Ddz/FYMBHLoVkugo0z6by9qYAnbIG8UaNYUUc36djNTmhM/kxTNVilLi/2F
-6dYNTF3i3ltLFaxrPfCegbukWB0JUJDtRDe5AgMBAAGjMTAvMA4GA1UdDwEB/wQE
-AwICBDAdBgNVHQ4EFgQUhzDVd5Av//unqJbv5Cg3hjVcbOUwDQYJKoZIhvcNAQEL
-BQADggEBAGZKWpla7c7ZFcdhAu8X2zJzTXikdZkF1H5Zdddkivo+MgeDO85qmmfU
-TKI62saGUE4gZTtcy6Fd4wFMyNIvwar1Lf6xAu5qpu5yGGNthX8QORKNjmbcRj+v
-Rvl8xSVfo2LjM8vvjxGybWQqTmEPzmnq0AtvsfVXiWBVKouzvyb7VPUZMeeL5tBn
-PSxrbRa86t20wDnxgtUP2/+d+56WeUtL86seEziPBFVXCQpsnH8qCj1p27/Crglh
-xlTwAt8biP9mtxVCIm5Tct+kiRSIfpLm42QMtqsvEPex9I4VJ51/CmP7J7npADJr
-gXQk/TEwX8eRYg4/RHJNN64LVZkYpms=
------END CERTIFICATE-----
-
-5. Initialize your terraform providers
+1. Initialize your terraform providers (this will download the required files in .terraform folder)
 
 ```ps
 terraform init
 ```
 
-6. Prepare the changes that will be applied
+2. Prepare the changes that will be applied
 
 ```ps
 terraform plan -out main.tfplan
@@ -128,49 +130,15 @@ terraform plan -out main.tfplan
 
 That command will put all of the changes in a *.tfplan file and will show you the output of the needed changes
 
-7. Apply the changes to your infrastructure
+3. Apply the changes to your infrastructure
 
 ```ps
 terraform apply "main.tfplan"
 ```
 
-8. Get the autogenerated admin_password value
+4. Destroy what you deployed
 
 ```ps
-terraform output -raw admin_password
+terraform apply main.tfplan -destroy
+terrafrom destroy -target=<terraform-resource>
 ```
-
-It will give you the password generated
-
-9. Examples of useful commands
-
-To run only one module from main.tf
-
-```ps
-terraform plan -target module.network-security-group -out "nsg.tfplan"
-terraform apply "nsg.tfplan"
-```
-
-In this first example, we target the module "network-security-group" and the specific resource we added in the module "main.tf"
-
-In the second one, we target two modules at same time :
-
-```ps
-terraform plan -target module.network-security-group -target module.virtual-network -out "network.tfplan"
-terraform apply "network.tfplan"
-```
-
-10. Cleaning up Terraform State if you want to run it against another tenant
-
-Run the PowerShell Script in the current directory :
-
-```ps
-.\Remove_Terraform_StateFiles.ps1
-```
-
-
-10. References
-
-https://www.cloudninja.nu/post/2022/06/github-terraform-azure-part1/
-https://rohanislam2.medium.com/learn-terraform-and-deploy-azure-resource-via-azure-devops-pipeline-9e340272fdb3
-

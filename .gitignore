@@ -7,6 +7,9 @@
 # Local .terraform directories
 **/.terraform/*
 
+# providers file (sensivite information)
+providers.tf
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

@@ -1,97 +1,61 @@
-## How to connect to Azure CLI and use the correct subscription
+# Deploy an Azure Virtual Machine with Terraform
 
-1. Open a command line that has access to the Azure CLI.
+This subfolder is a template used to deploy a Virtual Machine in Azure using Terraform CLI ([Terraform](https://developer.hashicorp.com/terraform/downloads)). For the example, i run all of those commands using Windows/PowerShell.
 
+By default, this template will deply the all those services in your Azure Subscription :
 
+- Resource Group
+- Network Security Group (NSG for VM NIC Interface & )
+- Virtual Network (Subnets for Servers & VPN Gateway)
+- Virtual Machine Network Interface (Static IP)
+- Virtual Machine
+- Virtual Network Gateway (Basic by default with Dynamic Public IP)
 
-2. Run az login without any parameters and follow the instructions to sign in to Azure.
+## ⚡ Module Configuration
 
-```ps
-az login
-```
-
-You will get a result like this :
-
-A web browser has been opened at https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize. Please continue the login in the web browser. If no web browser is available or if the web browser fails to open, use device code flow with `az login --use-device-code`.
-[
-  {
-    "cloudName": "AzureCloud",
-    "homeTenantId": "********-****-****-****-************",
-    "id": "********-****-****-****-************",
-    "isDefault": true,
-    "managedByTenants": [],
-    "name": "Subscription-Name",
-    "state": "Enabled",
-    "tenantId": "********-****-****-****-************",
-    "user": {
-      "name": "admin@domainname.fr",
-      "type": "user"
-    }
-  }
-]
-
-3. To confirm the current Azure subscription, run az account show.
+1. Generate the providers.tf and terraform.tfvars configuration files.
 
 ```ps
-az account show
+$CurrentDirectory = Get-Location
+Get-ChildItem -Path $CurrentDirectory -Recurse -Include "*.example" | Rename-Item -NewName { $_.Name -replace ".example","" }
 ```
 
-4. To view all the Azure subscription names and IDs for a specific Microsoft account, run az account list (Just replace the email part)
+2. Replace all the variables in "providers.tf" and "terraform.tfvars" files
 
-```ps
-az account list --query "[?user.name=='<microsoft_account_email>'].{Name:name, ID:id, Default:isDefault}" --output Table
-```
+  2a. providers.tf
 
-5. To use a specific Azure subscription, run az account set.
+  📍 _Replace variables with the pre-requisites information you got from the root folder intructions
 
-```ps
-az account set --subscription "<subscription_id_or_subscription_name>"
-```
+    ```text
+      subscription_id   = "00000000-0000-0000-0000-000000000000"
+      tenant_id         = "00000000-0000-0000-0000-000000000000"
+      client_id         = "00000000-0000-0000-0000-000000000000"
+      client_secret     = "*************************************"
+    ```
 
-## Creation of the Service Principal to use with Terraform
+  2b. terraform.tfvars
 
-1. Creation of the Service Principal (Replace "id_of_the_subscription" with the id result from the "az account show" command)
+    📍 _Replace variables with your needs
 
-```ps
-servicePrincipalName="msdocs-sp-$randomIdentifier"
-roleName="azureRoleName"
-az ad sp create-for-rbac --name $servicePrincipalName --role $roleName --scopes="/subscriptions/<id_of_the_subscription>"
-```
+## 📜 Certificates
 
+1. Configure your VPN Root Certificate
 
-This command will output 5 values:
+    📍 _Create your Root Certificate (You can change the CN Value to fit your needs)
 
-{
-  "appId": "00000000-0000-0000-0000-000000000000",
-  "displayName": "azure-cli-2017-06-05-10-41-15",
-  "name": "http://azure-cli-2017-06-05-10-41-15",
-  "password": "0000-0000-0000-0000-000000000000",
-  "tenant": "00000000-0000-0000-0000-000000000000"
-}
+    ```ps
+    $cert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
+    -Subject "CN=VPNROOTCA" -KeyExportPolicy Exportable `
+    -HashAlgorithm sha256 -KeyLength 2048 `
+    -CertStoreLocation "Cert:\CurrentUser\My" -KeyUsageProperty Sign -KeyUsage CertSign -NotAfter (Get-Date).AddYears(20)
+    ```
 
-These values map to the Terraform variables like so:
+2. Export the root certificate (using .cer base64)
 
-* appId is the client_id defined above.
-* password is the client_secret defined above.
-* tenant is the tenant_id defined above.
+    📍 _Export the cert using certmgr.msc to a *.cer file (without private key)
 
-2. Rename the "providers.tf.example file in the root of this project directory to "providers.tf" and fill out the required information
-
-3. Rename the "terraform.tfvars.example file in the root of this project directory to "terraform.tfvars" and change variables values to fit your environment
-
-4. Configure your VPN Root Certificate
-
-Creation of the Root Certificate (You can change the CN Value to fit your needs)
-
-```ps
-$cert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
--Subject "CN=VPNROOTCA" -KeyExportPolicy Exportable `
--HashAlgorithm sha256 -KeyLength 2048 `
--CertStoreLocation "Cert:\CurrentUser\My" -KeyUsageProperty Sign -KeyUsage CertSign -NotAfter (Get-Date).AddYears(20)
-```
-
-Export the cert using certmgr.msc to a *.cer file (without private key), and edit it in notepad
-Take the values between "-----BEGIN CERTIFICATE-----" and "-----END CERTIFICATE-----" and replace them in virtual-network-gateway module, in "main.tf" file.
+Take the values between "-----BEGIN CERTIFICATE-----" and "-----END CERTIFICATE-----" 
+Replace them in ./virtual-network-gateway directory module, in the "main.tf" file.
 
 Exemple of the certificate file content :
 
@@ -114,13 +78,15 @@ xlTwAt8biP9mtxVCIm5Tct+kiRSIfpLm42QMtqsvEPex9I4VJ51/CmP7J7npADJr
 gXQk/TEwX8eRYg4/RHJNN64LVZkYpms=
 -----END CERTIFICATE-----
 
-5. Initialize your terraform providers
+## :rocket: Deploy the resources
+
+1. Initialize your terraform providers (this will download the required files in .terraform folder)
 
 ```ps
 terraform init
 ```
 
-6. Prepare the changes that will be applied
+2. Prepare ALL the changes that will be applied
 
 ```ps
 terraform plan -out main.tfplan
@@ -128,13 +94,13 @@ terraform plan -out main.tfplan
 
 That command will put all of the changes in a *.tfplan file and will show you the output of the needed changes
 
-7. Apply the changes to your infrastructure
+3. Apply ALL the changes to your infrastructure
 
 ```ps
 terraform apply "main.tfplan"
 ```
 
-8. Get the autogenerated admin_password value
+4. Get the autogenerated admin_password value
 
 ```ps
 terraform output -raw admin_password
@@ -142,9 +108,9 @@ terraform output -raw admin_password
 
 It will give you the password generated
 
-9. Examples of useful commands
+## :green_book: Examples of useful commands
 
-To run only one module from main.tf
+    📍 To deploy only one specific module from main.tf
 
 ```ps
 terraform plan -target module.network-security-group -out "nsg.tfplan"
@@ -153,24 +119,25 @@ terraform apply "nsg.tfplan"
 
 In this first example, we target the module "network-security-group" and the specific resource we added in the module "main.tf"
 
-In the second one, we target two modules at same time :
+    📍 To deploy two modules at same time :
 
 ```ps
 terraform plan -target module.network-security-group -target module.virtual-network -out "network.tfplan"
 terraform apply "network.tfplan"
 ```
 
-10. Cleaning up Terraform State if you want to run it against another tenant
+## :x: Cleaning up Terraform State before running it against another tenant
 
-Run the PowerShell Script in the current directory :
+    📍 Run the PowerShell Script in the current directory :
 
 ```ps
 .\Remove_Terraform_StateFiles.ps1
 ```
 
 
-10. References
+## :bookmark_tabs: References
 
-https://www.cloudninja.nu/post/2022/06/github-terraform-azure-part1/
-https://rohanislam2.medium.com/learn-terraform-and-deploy-azure-resource-via-azure-devops-pipeline-9e340272fdb3
+- https://www.cloudninja.nu/post/2022/06/github-terraform-azure-part1/
+- https://rohanislam2.medium.com/learn-terraform-and-deploy-azure-resource-via-azure-devops-pipeline-9e340272fdb3
+
 
