@@ -35,7 +35,7 @@ Get-ChildItem -Path $CurrentDirectory -Recurse -Include "*.example" | Rename-Ite
 
   2b. terraform.tfvars
 
-    📍 _Replace variables with your needs
+    📍 _Replace variables to fit your needs
 
 ## 📜 Certificates
 
