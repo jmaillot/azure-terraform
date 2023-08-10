@@ -104,15 +104,15 @@ Lets get the required workstation tools installed and configured.
 
 ## 📝 Pre-requisites checklist
 
-Before we get started, make sure you have those requirements.
+Before we get started with the resources deployment, make sure you have those requirements.
 
 - [ ] You have an Azure Contributor Account
 - [ ] You have the Service Principal AppId
 - [ ] You have the Service Principal Password
 - [ ] You have the Tenant id
 
-[!IMPORTANT]  
-Those are required information for your deployment to succeed.
+> [!IMPORTANT]
+> Those are required information for your deployment to succeed.
 
 ## :rocket: Basic Terraform commands you will need in the modules
 
