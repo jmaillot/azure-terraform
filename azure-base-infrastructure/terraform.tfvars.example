@@ -11,7 +11,7 @@ subnet_address_prefixes = ["172.16.0.0/27"]
 # Virtual Machine variables
 vmname = "tfdemovm001"
 virtual_machine_network_interface_ip = "172.16.0.4"
-vm_size = "Standard_D2_v3"
+vm_size = "Standard_D2s_v3"
 os_disk_type = "Standard_LRS" # Possible Values (Standard_LRS,Premium_LRS,...)
 image_publisher = "MicrosoftWindowsServer"
 image_offer = "WindowsServer"
