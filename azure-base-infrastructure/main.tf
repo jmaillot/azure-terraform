@@ -90,7 +90,7 @@ module "azure-backup-policy" {
   source = "./modules/azure-backup-policy"    
   resource_group_name            = var.resource_group_name
   backup_policy_name             = var.backup_policy_name
-  recovery_vault_name            = var.recovery_vault_name
+  recovery_vault_name            = module.azure-backup-recoveryvault.recovery_vault_name
   timezone                       = var.timezone
   instant_restore_retention_days = var.instant_restore_retention_days
   backup_frequency               = var.backup_frequency
