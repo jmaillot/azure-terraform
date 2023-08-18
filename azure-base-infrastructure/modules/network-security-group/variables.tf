@@ -1,7 +1,6 @@
-variable "vmname" {
-    type = string
-    description = "name of the vm"
-}
+#################################
+# Azure RG & Location Variables #
+#################################
 
 variable "location" {
     type = string
@@ -11,5 +10,14 @@ variable "location" {
 variable "resource_group_name" {
     type = string
     description = "name of the resource group"
+}
+
+###################################
+# Azure Virtual Machine Variables #
+###################################
+
+variable "vmname" {
+    type = string
+    description = "name of the vm"
 }
 

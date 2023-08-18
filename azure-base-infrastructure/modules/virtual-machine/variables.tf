@@ -1,7 +1,6 @@
-variable "vmname" {
-    type = string
-    description = "The name of the virtual machine"
-}
+#################################
+# Azure RG & Location Variables #
+#################################
 
 variable "resource_group_name" {
     type = string
@@ -13,9 +12,22 @@ variable "location" {
     description = "Azure location "
 }
 
+#####################################
+# Azure Network Interface Variables #
+#####################################
+
 variable "network_interface_ids" {
     type = string
     description = "network interface id"
+}
+
+###################################
+# Azure Virtual Machine Variables #
+###################################
+
+variable "vmname" {
+    type = string
+    description = "The name of the virtual machine"
 }
 
 variable "vm_size" {
@@ -51,4 +63,9 @@ variable "image_offer" {
 variable "image_sku" {
     type = string
     description = "Azure image sku"
+}
+
+variable "vm_id" {
+  type        = string
+  description = "Azure Virtual Machine ID"
 }

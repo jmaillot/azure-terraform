@@ -1,6 +1,10 @@
-variable "vmname" {
+#################################
+# Azure RG & Location Variables #
+#################################
+
+variable "resource_group_name" {
     type = string
-    description = "name of the vm"
+    description = "name of the resource group"
 }
 
 variable "location" {
@@ -8,9 +12,13 @@ variable "location" {
     description = "Azure location"
 }
 
-variable "resource_group_name" {
+#####################################
+# Azure Network Interface Variables #
+#####################################
+
+variable "vmname" {
     type = string
-    description = "name of the resource group"
+    description = "name of the vm"
 }
 
 variable "subnet_id" {
