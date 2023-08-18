@@ -1,2 +1,2 @@
 Module description:
-The module provisions Azure Network Interface for our VM
+This module will provision the Azure Network Interface for our virtual machine

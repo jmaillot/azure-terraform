@@ -1,2 +1,2 @@
 Module description:
-The module provisions Azure virtual network
+This module will provision the Azure Virtual Machine

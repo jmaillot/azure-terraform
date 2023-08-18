@@ -1,3 +1,3 @@
 Module description:
-The module provisions Azure Virtual Network Gateway Basic SKU
+This module will provision the Basic VPN Gateway
 

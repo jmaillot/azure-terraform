@@ -1,2 +1,2 @@
 Module description:
-The module provisions Azure Network Security group for the VM with default values
+This module will provision the Network Security group for the VM & VNET with default values
