@@ -65,7 +65,7 @@ variable "image_sku" {
     description = "Azure image sku"
 }
 
-variable "vm_id" {
+/* variable "vm_id" {
   type        = string
   description = "Azure Virtual Machine ID"
-}
+} */

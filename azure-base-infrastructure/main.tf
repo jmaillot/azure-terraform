@@ -77,8 +77,8 @@ module "virtual-network-gateway" {
 /* Creation of the Recovery Services Vault */
 
 module "azure-backup-recoveryvault" {
-  source = "./modules/azure-backup-recoveryvault"    
-  recovery_vault_name     = var.recovery_vault_name
+  source = "./modules/azure-backup-recoveryvault"  
+  name                    = module.azure-backup-recoveryvault.recovery_vault_name
   resource_group_name     = var.resource_group_name
   location                = var.location
   depends_on              = [azurerm_resource_group.rg]

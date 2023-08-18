@@ -16,7 +16,7 @@ variable "location" {
 # Azure Recovery Vault Variables #
 ##################################
 
-variable "recovery_vault_name" {
+variable "name" {
     type = string
     description = "Name of the Recovery Vault"
 }

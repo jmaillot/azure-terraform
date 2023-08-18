@@ -84,11 +84,6 @@ variable "virtual_machine_network_interface_ip" {
   description = "Azure Virtual Machine Private IP"
 }
 
-/* variable "vm_id" {
-  type        = string
-  description = "Azure Virtual Machine ID"
-} */
-
 ###############################
 # Azure VPN Gateway Variables #
 ###############################
@@ -121,15 +116,6 @@ variable "backup_policy_name" {
   type        = string
   description = "The name of the backup policy."
 }
-
-/* variable "backup_policy_id" {
-  description = "The ID of the Backup Policy."
-} */
-
-/* variable "recovery_vault_name" {
-  type        = string
-  description = "The name of the recovery vault."
-} */
 
 variable "vault_sku" {
     type = string
