@@ -1,7 +1,11 @@
+/* Creation of the Resource Group where all ressources will be created */
+
 resource "azurerm_resource_group" "rg" {
    name      = var.resource_group_name
    location  = var.location
 }
+
+/* Creation of the Network Security Group that will be attached to VNET & VM Network Interface */
 
 module "network-security-group" {
   source = "./modules/network-security-group"    
@@ -10,6 +14,8 @@ module "network-security-group" {
   resource_group_name = var.resource_group_name
   depends_on          = [azurerm_resource_group.rg]
 }
+
+/* Creation of the default Virtual Network and Servers Subnet */
 
 module "virtual-network" {
   source = "./modules/virtual-network"
@@ -23,6 +29,8 @@ module "virtual-network" {
   depends_on                      = [module.network-security-group]
 }
 
+/* Creation of the network interface for the Virtual Machine */
+
 module "network-interface" {
   source = "./modules/network-interface"    
   vmname                                = var.vmname
@@ -33,6 +41,8 @@ module "network-interface" {
   virtual_machine_network_interface_ip  = var.virtual_machine_network_interface_ip
   depends_on                            = [module.virtual-network]
 }
+
+/* Creation of the Virtual Machine */
 
 module "virtual-machine" {
   source = "./modules/virtual-machine"    
@@ -47,8 +57,10 @@ module "virtual-machine" {
   image_publisher         = var.image_publisher
   image_offer             = var.image_offer
   image_sku               = var.image_sku
-  depends_on              = [module.network-interface]
+  depends_on              = [module.network-interface,module.azure-backup-policy]
 }
+
+/* Creation of the Basic VPN Gateway */
 
 module "virtual-network-gateway" {
   source = "./modules/virtual-network-gateway"    
@@ -62,9 +74,47 @@ module "virtual-network-gateway" {
   depends_on                          = [module.virtual-network]
 }
 
+/* Creation of the Recovery Services Vault */
 
-/* module "install-rds" {
-  source = "./modules/install-rds"
-  virtual_machine_id = module.virtual-machine.vm_id
-} */
+module "azure-backup-recoveryvault" {
+  source = "./modules/azure-backup-recoveryvault"    
+  recovery_vault_name     = var.recovery_vault_name
+  resource_group_name     = var.resource_group_name
+  location                = var.location
+  depends_on              = [azurerm_resource_group.rg]
+}
 
+/* Creation of the Backup Policy */
+
+module "azure-backup-policy" {
+  source = "./modules/azure-backup-policy"    
+  resource_group_name            = var.resource_group_name
+  backup_policy_name             = var.backup_policy_name
+  recovery_vault_name            = var.recovery_vault_name
+  timezone                       = var.timezone
+  instant_restore_retention_days = var.instant_restore_retention_days
+  backup_frequency               = var.backup_frequency
+  backup_time                    = var.backup_time
+  daily_count                    = var.daily_count
+  weekly_count                   = var.weekly_count
+  weekly_weekdays                = var.weekly_weekdays
+  monthly_count                  = var.monthly_count
+  monthly_weekdays               = var.monthly_weekdays
+  monthly_weeks                  = var.monthly_weeks
+  yearly_count                   = var.yearly_count
+  yearly_weekdays                = var.yearly_weekdays
+  yearly_weeks                   = var.yearly_weeks
+  yearly_months                  = var.yearly_months
+  depends_on                     = [module.azure-backup-recoveryvault]
+}
+
+/* Assign Backup Policy to our VM */
+
+module "azure-backup-vm" {
+  source = "./modules/azure-backup-vm"    
+  recovery_vault_name     = module.azure-backup-recoveryvault.recovery_vault_name
+  resource_group_name     = var.resource_group_name
+  backup_policy_id        = module.azure-backup-policy.backup_policy_id
+  vm_id                   = module.virtual-machine.vm_id
+  depends_on              = [module.azure-backup-policy]
+}
