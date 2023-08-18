@@ -5,11 +5,14 @@ This subfolder is a template used to deploy a Virtual Machine in Azure using Ter
 By default, this template will deply the all those services in your Azure Subscription :
 
 - Resource Group
-- Network Security Group (NSG for VM NIC Interface & )
+- Network Security Group (NSG for VM NIC Interface & VNET)
 - Virtual Network (Subnets for Servers & VPN Gateway)
+- Azure Recovery Services Vault
+- Azure Backup Policy
 - Virtual Machine Network Interface (Static IP)
-- Virtual Machine
+- Virtual Machine (+ Backup Policy assigned)
 - Virtual Network Gateway (Basic by default with Dynamic Public IP)
+
 
 ## ⚡ Module Configuration
 
