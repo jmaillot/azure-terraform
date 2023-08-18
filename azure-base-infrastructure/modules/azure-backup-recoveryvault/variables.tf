@@ -30,5 +30,5 @@ variable "vault_sku" {
 variable soft_delete_enabled {
   description = "Is soft delete enable for this Vault?"
   type        = bool
-  default     = true
+  default     = false
 }
