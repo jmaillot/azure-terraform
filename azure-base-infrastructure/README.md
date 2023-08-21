@@ -2,7 +2,7 @@
 
 This subfolder is a template used to deploy a Virtual Machine in Azure using Terraform CLI ([Terraform](https://developer.hashicorp.com/terraform/downloads)). For the example, i run all of those commands using Windows/PowerShell.
 
-By default, this template will deply the all those services in your Azure Subscription :
+By default, this template will deploy all of those services in your Azure Subscription :
 
 - Resource Group
 - Network Security Group (NSG for VM NIC Interface & VNET)
