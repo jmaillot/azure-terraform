@@ -6,7 +6,7 @@ This repository is a template used to deploy several resources within your Azure
 
 The very first step will be to download this repository files onto a local folder, or just **clone the repository** and `cd` into it.
 
-📍 _**All commands** are run on your **local** workstation within your repository directory_
+📍 _**All commands** are run on your **local** workstation within your local copy of this repository_
 
 ## 🔧 Workstation Tools
 
@@ -139,6 +139,5 @@ terraform apply "main.tfplan"
 4. Destroy what you deployed
 
 ```ps
-terraform apply main.tfplan -destroy
-terrafrom destroy -target=<terraform-resource>
+terraform destroy
 ```
