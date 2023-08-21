@@ -2,7 +2,7 @@
 
 This repository is a template used to deploy several resources within your Azure Subscription
 
-> [!example]
+> **Note**
 > The first example will be the deployment of an Azure Virtual Machine, with some useful resources associated (VPN, Backup..., you can find it in the subfolder called "azure-base-infrastructure")
 
 ## 🚀 First Steps
