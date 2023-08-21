@@ -142,5 +142,6 @@ terraform apply "network.tfplan"
 
 - https://www.cloudninja.nu/post/2022/06/github-terraform-azure-part1/
 - https://rohanislam2.medium.com/learn-terraform-and-deploy-azure-resource-via-azure-devops-pipeline-9e340272fdb3
+- https://github.com/saileshkaluva/myrepo/tree/598dcf8be196807804bfaac7566e29b92f223fb8/examples
 
 
