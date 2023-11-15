@@ -1,0 +1,79 @@
+##############################################
+# Resource Group & Location of the resources #
+##############################################
+resource_group_name = "terrform-demo-rg"
+location = "westeurope"
+
+################################
+# Default VNET & Server Subnet #
+################################
+virtual_network_name = "tfdemo-vnet-01"
+virtual_network_address_space = ["172.16.0.0/16"]
+subnet_name = "srv-subnet-01"
+subnet_address_prefixes = ["172.16.0.0/27"]
+
+#############################
+# Virtual Machine variables #
+#############################
+
+os_disk_type = "Premium_LRS" # Possible Values (Standard_LRS,Premium_LRS,...)
+image_publisher = "MicrosoftWindowsServer"
+image_offer = "WindowsServer"
+image_sku = "2022-datacenter-azure-edition"
+admin_username = "**************"
+
+#####################################
+# Virtual Network Gateway variables #
+#####################################
+vpn_subnet_address_prefixes = ["172.16.0.32/27"]
+vpn_gateway_name = "tfdemo-vnet-gw" 
+vpn_gateway_sku = "Basic"
+vpn_client_subnet_address_prefixes = ["10.16.32.0/24"]
+
+#######################
+# Azure Backup Policy #
+#######################
+
+/* General settings */
+
+backup_policy_name = "AzureBackupEnhancedPolicy"
+
+##################################################################
+# Optional variables (Just uncomment to bypass Default Settings) #
+##################################################################
+
+/* Recovery Vault SKU */
+
+# vault_sku = "Standard"
+
+/* Type of Backup Policy */
+# policy_type = "V1" // V2 for Enhanced Policy
+
+/* TimeZone of the Backups */
+
+# timezone = "Romance Standard Time" # (Default)
+
+/* Instant Restore Retention */
+# instant_restore_retention_days = "2" # (Default)
+
+/* Backup Time & Frequency */
+# backup_frequency = "Daily" # (Default)
+# backup_time = "19:00" # (Default)
+
+/* Day Backup Settings */
+# daily_count = "7" # (Default)
+
+/* Week Backup Settings */
+# weekly_count = "4" # (Default)
+# weekly_weekdays = "Friday" # (Default)
+
+/* Month Backup Settings */
+# monthly_count = "12" # (Default)
+# monthly_weekdays = "Friday" # (Default)
+# monthly_weeks = "Last" # (Default)
+
+/* Year Backup Settings */
+# yearly_count = "10" # (Default)
+# yearly_weekdays = "Friday"  # (Default)
+# yearly_weeks = "Last"  # (Default)
+# yearly_months = "December"  # (Default)

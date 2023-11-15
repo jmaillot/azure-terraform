@@ -80,8 +80,8 @@ Lets get the required workstation tools installed and configured.
       📍 _Replace <id_of_the_subscription> with the id result from the "az account show" command 
 
       ```ps
-      servicePrincipalName="msdocs-sp-$randomIdentifier"
-      roleName="azureRoleName"
+      servicePrincipalName="terraform-sp-$randomIdentifier"
+      roleName="Contributor"
       az ad sp create-for-rbac --name $servicePrincipalName --role $roleName --scopes="/subscriptions/<id_of_the_subscription>"
       ```
 

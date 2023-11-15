@@ -1,0 +1,13 @@
+# Ignore folders
+archives/
+.terraform/
+
+# Ignore files that contains sensitive data
+*.tfvars
+*.tfplan
+providers.tf
+variables.tf
+
+# Ignore Terraform State & lock files
+*.tfstate*
+*.lock*
